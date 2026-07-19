@@ -1,0 +1,92 @@
+
+1. Project name: PFT (Personal Finance Tracker)
+2. Problem statement:
+	a. loss of money/budget.
+	b. lack of budget monitoring.
+	c. budget not meeting the target date.
+	d. can't forecast the upcoming month. 
+	e. budget already gone before salary pay.
+	f. can't track where the budget has gone. 
+3. Current process:
+	a. mental math.
+	b. as long as there is money in the wallet.
+	c. paid the important bills first every salary pay.
+	d. no budget tracker
+4. Pain points:
+	a. Forgetting expenses
+	b. hard to compute remaining balance
+	c. cannot track savings.
+	d. no money left before the next pay
+5. Goals:
+	a. track income
+	b. track expenses
+	c. view remaining balance
+	d. set saving goals
+	e. categorize income and expenses
+	f. forecast/estimate upcoming expenses and income
+6. Target user:
+	(Niche application)
+	a. me
+	b. maybe other users same problem with me
+7. Functional requirement:
+	a. user account
+		- login
+		- register
+		- forgot password
+	b. income
+		(CRUD)
+		- add income
+		- edit income
+		- delete income
+	c. expense
+		(CRUD)
+		- add expense
+		- edit expense
+		- delete expense
+	d. dashboard
+		- total income
+		- total expense
+		- remaining balance
+		- savings 
+		- status 
+	e. reports
+		- charts
+		- daily/monthly/annual (range)
+		- forecast
+	f.simulations
+		- same with dashboard but it will not be saved
+8. Non-functional Requirements
+	a. security
+	b. reliability
+	c. usability
+	d. portability
+	e. efficient 
+9. Data requirements:
+	a. user
+		-username
+		-email (backup/auth)
+		-password
+	b. income
+		-amount
+		-source
+		-date
+		-notes
+	c. expense
+		-amount
+		-source
+		-date
+		-note
+10. Proposed solution:
+	- Develop a responsive web application (Personal Finance Tracker) for accessibility in any platform that allow user to record income and expenses, automatically calculate balances, generate reports and forecast the upcoming date. This allow user to track and monitor their incomes/expenses and help user identify where the money has gone, what would be the balance by next week or month if i buy something today. 
+	
+11. Tech stack
+	a. Frontend
+		- React Vite
+		- Tailwind css
+	b. Backend
+		- To be discussed
+	c. Database
+		- Firebase
+		
+		
+
