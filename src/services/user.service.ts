@@ -4,7 +4,7 @@ import {
     set,
 } from "firebase/database";
 
-import { db } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
 
 export const usernameExists = async (
     username: string
@@ -55,6 +55,25 @@ export const createUser = async (
         ref(db, `pft_usernames/${username}`),
         {
             uid,
+            email,
         }
     );
+};
+
+export const getUsername = async (): Promise<string> => {
+    const uid = auth.currentUser?.uid;
+
+    if (!uid) {
+        throw new Error("User is not logged in.");
+    }
+
+    const snapshot = await get(
+        ref(db, `pft_us3r4cc/${uid}/username`)
+    );
+
+    if (!snapshot.exists()) {
+        throw new Error("Username not found.");
+    }
+
+    return snapshot.val();
 };
