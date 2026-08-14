@@ -11,7 +11,7 @@ type UserProfileMenuProps = {
 function UserProfileMenu({
     username,
     isOpen,
-    onClose,
+    // onClose,
 }: UserProfileMenuProps) {
     const navigate = useNavigate();
 
