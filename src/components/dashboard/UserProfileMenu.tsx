@@ -11,13 +11,14 @@ type UserProfileMenuProps = {
 function UserProfileMenu({
     username,
     isOpen,
-    // onClose,
+    onClose,
 }: UserProfileMenuProps) {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
             await logout();
+            onClose();
             navigate("/");
         } catch (error) {
             console.error("Logout failed:", error);
