@@ -1,8 +1,10 @@
 import { useState } from "react";
 import AddEditTransaction from "./AddEditTransactionModal";
-import { deleteTransaction, type Transaction } from "../../services/finance.service";
-
-
+import ConfirmationModal from "../common/ConfirmationModal";
+import {
+    deleteTransaction,
+    type Transaction,
+} from "../../services/finance.service";
 
 type DateDetailsModalProps = {
     date: string | null;
@@ -18,6 +20,10 @@ function DateDetailsModal({
     onClose,
 }: DateDetailsModalProps) {
     const [showAddTransaction, setShowAddTransaction] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] =
+        useState<string | null>(null);
+    const [transactionToEdit, setTransactionToEdit] =
+    useState<Transaction | null>(null);
 
     if (!date) {
         return null;
@@ -39,28 +45,22 @@ function DateDetailsModal({
         (transaction) => transaction.type === "expense"
     );
 
-    const handleDelete = async (transactionId: string) => {
-    const confirmed = window.confirm(
-        "Delete this transaction?"
-    );
+    const handleDelete = async () => {
+        if (!transactionToDelete) {
+            return;
+        }
 
-    if (!confirmed) {
-        return;
-    }
+        try {
+            await deleteTransaction(transactionToDelete);
 
-    try {
-        await deleteTransaction(transactionId);
-        onClose();
-    } catch (error) {
-    console.error("DELETE ERROR:", error);
+            setTransactionToDelete(null);
+            onClose();
+        } catch (error) {
+            console.error("DELETE ERROR:", error);
 
-    alert(
-        error instanceof Error
-            ? error.message
-            : "Failed to delete transaction."
-    );
-}
-};
+            setTransactionToDelete(null);
+        }
+    };
 
     return (
         <>
@@ -138,16 +138,23 @@ function DateDetailsModal({
                                         </div>
 
                                         <div className="flex gap-2">
-                                            <button className="text-sm font-medium text-blue-600 hover:underline">
-                                                Edit
-                                            </button>
+                                    <button
+    onClick={() => setTransactionToEdit(transaction)}
+    className="text-sm font-medium text-blue-600 hover:underline"
+>
+    Edit
+</button>
 
                                             <button
-    onClick={() => handleDelete(transaction.id)}
-    className="text-sm font-medium text-red-600 hover:underline"
->
-    Delete
-</button>
+                                                onClick={() =>
+                                                    setTransactionToDelete(
+                                                        transaction.id
+                                                    )
+                                                }
+                                                className="text-sm font-medium text-red-600 hover:underline"
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -185,16 +192,23 @@ function DateDetailsModal({
                                         </div>
 
                                         <div className="flex gap-2">
-                                            <button className="text-sm font-medium text-blue-600 hover:underline">
-                                                Edit
-                                            </button>
-
 <button
-    onClick={() => handleDelete(transaction.id)}
-    className="text-sm font-medium text-red-600 hover:underline"
+    onClick={() => setTransactionToEdit(transaction)}
+    className="text-sm font-medium text-blue-600 hover:underline"
 >
-    Delete
+    Edit
 </button>
+
+                                            <button
+                                                onClick={() =>
+                                                    setTransactionToDelete(
+                                                        transaction.id
+                                                    )
+                                                }
+                                                className="text-sm font-medium text-red-600 hover:underline"
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -213,13 +227,34 @@ function DateDetailsModal({
             </div>
 
             {showAddTransaction && (
-                <AddEditTransaction
-                    date={date}
-                    onClose={() =>
-                        setShowAddTransaction(false)
-                    }
-                />
-            )}
+    <AddEditTransaction
+        date={date}
+        onClose={() =>
+            setShowAddTransaction(false)
+        }
+    />
+)}
+
+{transactionToEdit && (
+    <AddEditTransaction
+        date={date}
+        transaction={transactionToEdit}
+        transactionId={transactionToEdit.id}
+        onClose={() =>
+            setTransactionToEdit(null)
+        }
+    />
+)}
+
+            <ConfirmationModal
+                isOpen={transactionToDelete !== null}
+                title="Delete transaction?"
+                message="Are you sure you want to delete this transaction? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleDelete}
+                onCancel={() => setTransactionToDelete(null)}
+            />
         </>
     );
 }
