@@ -136,7 +136,7 @@ function FinanceCalendar() {
 
     return (
         <>
-            <div className="rounded-2xl bg-white p-4 shadow-sm sm:p-6">
+            <div className="overflow-hidden rounded-2xl bg-white p-2 shadow-sm sm:p-4 md:p-6">
                 <FullCalendar
                     plugins={[
                         dayGridPlugin,
@@ -160,104 +160,58 @@ function FinanceCalendar() {
                             `${year}-${month}`
                         );
                     }}
-                    dayCellContent={(info) => {
-                        const date =
-                            `${info.date.getFullYear()}-` +
-                            `${String(
-                                info.date.getMonth() + 1
-                            ).padStart(2, "0")}-` +
-                            `${String(
-                                info.date.getDate()
-                            ).padStart(2, "0")}`;
+dayCellContent={(info) => {
+    const date =
+        `${info.date.getFullYear()}-` +
+        `${String(info.date.getMonth() + 1).padStart(2, "0")}-` +
+        `${String(info.date.getDate()).padStart(2, "0")}`;
 
-                        const balance =
-                            dailyBalances[date];
+    const balance = dailyBalances[date];
 
-                        const dayTransactions =
-                            Object.values(
-                                transactions
-                            ).filter(
-                                (transaction) =>
-                                    transaction.date ===
-                                    date
-                            );
+    const dayTransactions = Object.values(transactions).filter(
+        (t) => t.date === date
+    );
 
-                        const incomeCount =
-                            dayTransactions.filter(
-                                (transaction) =>
-                                    transaction.type ===
-                                    "income"
-                            ).length;
+    const incomeCount = dayTransactions.filter(
+        (t) => t.type === "income"
+    ).length;
 
-                        const expenseCount =
-                            dayTransactions.filter(
-                                (transaction) =>
-                                    transaction.type ===
-                                    "expense"
-                            ).length;
+    const expenseCount = dayTransactions.filter(
+        (t) => t.type === "expense"
+    ).length;
 
-                        return (
-                            <div className="flex w-full flex-col gap-1 p-1">
-                                <div>
-                                    {
-                                        info.dayNumberText
-                                    }
-                                </div>
+    return (
+        <div className="flex w-full min-w-0 flex-col gap-0.5 p-0.5 sm:gap-1 sm:p-1">
+            <div className="text-[10px] font-medium sm:text-xs md:text-sm">
+                {info.dayNumberText}
+            </div>
 
-                                {balance !==
-                                    undefined &&
-                                    balance !== 0 && (
-                                        <div className="font-bold text-slate-800">
-                                            ₱
-                                            {balance.toLocaleString(
-                                                "en-PH"
-                                            )}
-                                        </div>
-                                    )}
+            {balance !== undefined && balance !== 0 && (
+                <div className="truncate text-[9px] font-bold leading-tight text-slate-800 sm:text-[10px] md:text-xs lg:text-sm">
+                    ₱{balance.toLocaleString("en-PH")}
+                </div>
+            )}
 
-                                {(incomeCount >
-                                    0 ||
-                                    expenseCount >
-                                        0) && (
-                                    <div className="flex flex-wrap gap-1">
-                                        {Array.from(
-                                            {
-                                                length:
-                                                    incomeCount,
-                                            }
-                                        ).map(
-                                            (
-                                                _,
-                                                index
-                                            ) => (
-                                                <span
-                                                    key={`income-${index}`}
-                                                    className="h-4 w-4 rounded-full bg-green-500"
-                                                />
-                                            )
-                                        )}
+            {(incomeCount > 0 || expenseCount > 0) && (
+                <div className="flex flex-wrap gap-0.5 sm:gap-1">
+                    {Array.from({ length: incomeCount }).map((_, i) => (
+                        <span
+                            key={`i-${i}`}
+                            className="h-1.5 w-1.5 rounded-full bg-green-500 sm:h-2 sm:w-2 md:h-3 md:w-3"
+                        />
+                    ))}
 
-                                        {Array.from(
-                                            {
-                                                length:
-                                                    expenseCount,
-                                            }
-                                        ).map(
-                                            (
-                                                _,
-                                                index
-                                            ) => (
-                                                <span
-                                                    key={`expense-${index}`}
-                                                    className="h-4 w-4 rounded-full bg-red-500"
-                                                />
-                                            )
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }}
+                    {Array.from({ length: expenseCount }).map((_, i) => (
+                        <span
+                            key={`e-${i}`}
+                            className="h-1.5 w-1.5 rounded-full bg-red-500 sm:h-2 sm:w-2 md:h-3 md:w-3"
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}}
                     height="auto"
                 />
             </div>
