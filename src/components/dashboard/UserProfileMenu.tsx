@@ -30,7 +30,7 @@ function UserProfileMenu({
     }
 
     return (
-        <div className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
+        <div className="absolute right-0 z-50 mt-2 w-64 max-w-[calc(100vw-1rem)] rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
             
             <div className="mb-4">
                 <p className="text-sm text-slate-500">
@@ -39,6 +39,15 @@ function UserProfileMenu({
 
                 <p className="mt-1 font-semibold text-slate-800">
                     {username}
+                </p>
+            </div>
+
+            <div className="mb-4 mt-10 flex flex-row ">
+                <p className="text-sm text-slate-500">
+                    App Version
+                </p>
+                <p className="pl-2 text-sm text-slate-500">
+                    {__APP_VERSION__}
                 </p>
             </div>
 

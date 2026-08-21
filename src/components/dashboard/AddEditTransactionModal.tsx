@@ -11,6 +11,7 @@ type AddEditTransactionProps = {
     transaction?: Transaction | null;
     transactionId?: string | null;
     onClose: () => void;
+    onTransactionChanged: () => void;
 };
 
 function AddEditTransaction({
@@ -18,11 +19,13 @@ function AddEditTransaction({
     transaction = null,
     transactionId = null,
     onClose,
+    onTransactionChanged,
 }: AddEditTransactionProps) {
     const [type, setType] = useState<TransactionType>("income");
     const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const isEditMode = transaction !== null;
 
@@ -64,36 +67,47 @@ function AddEditTransaction({
             return;
         }
 
+        setIsLoading(true);
         try {
-            if (isEditMode && transactionId) {
-                await editTransaction(transactionId, {
-                    type,
-                    amount: numericAmount,
-                    description: description.trim(),
-                });
-            } else {
-                await createTransaction(
-                    type,
-                    numericAmount,
-                    description.trim(),
-                    date
-                );
-            }
+    if (isEditMode && transactionId) {
+        await editTransaction(transactionId, {
+            type,
+            amount: numericAmount,
+            description: description.trim(),
+        });
+    } else {
+        await createTransaction(
+            type,
+            numericAmount,
+            description.trim(),
+            date
+        );
+    }
 
-            onClose();
-        } catch {
-            setError(
-                isEditMode
-                    ? "Failed to update transaction."
-                    : "Failed to add transaction."
-            );
-        }
+    onTransactionChanged();
+
+    onClose();
+} catch (error) {
+    console.error("CRUD ERROR:", error);
+
+    setError(
+        isEditMode
+            ? "Failed to update transaction."
+            : "Failed to add transaction."
+    );
+} finally {
+    setIsLoading(false);
+}
     };
 
     return (
         <div
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
-            onClick={onClose}
+            onClick={() => {
+                if (!isLoading) {
+                    onClose();
+                }
+            }}
         >
             <div
                 className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
@@ -108,7 +122,12 @@ function AddEditTransaction({
 
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={() => {
+                            if (!isLoading) {
+                                onClose();
+                            }
+                        }}
+                        disabled={isLoading}
                         className="rounded-lg px-3 py-2 text-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
                         aria-label="Close"
                     >
@@ -133,6 +152,7 @@ function AddEditTransaction({
                                     value="income"
                                     checked={type === "income"}
                                     onChange={() => setType("income")}
+                                    disabled={isLoading}
                                     className="h-4 w-4"
                                 />
                                 <span>Income</span>
@@ -145,6 +165,7 @@ function AddEditTransaction({
                                     value="expense"
                                     checked={type === "expense"}
                                     onChange={() => setType("expense")}
+                                    disabled={isLoading}
                                     className="h-4 w-4"
                                 />
                                 <span>Expense</span>
@@ -164,6 +185,7 @@ function AddEditTransaction({
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder="0.00"
+                            disabled={isLoading}
                             className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500"
                         />
                     </div>
@@ -178,6 +200,7 @@ function AddEditTransaction({
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Enter a description"
                             rows={3}
+                            disabled={isLoading}
                             className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500"
                         />
                     </div>
@@ -202,17 +225,26 @@ function AddEditTransaction({
                         <button
                             type="button"
                             onClick={onClose}
+                            disabled={isLoading}
                             className="rounded-lg px-4 py-2 font-semibold text-slate-600 transition hover:bg-slate-100"
                         >
                             Cancel
                         </button>
 
-                        <button
-                            type="submit"
-                            className="rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white transition hover:bg-blue-700"
-                        >
-                            {isEditMode ? "Save" : "Add"}
-                        </button>
+<button
+    type="submit"
+    disabled={isLoading}
+    className="flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+>
+    {isLoading ? (
+        <>
+            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            {isEditMode ? "Saving..." : "Adding..."}
+        </>
+    ) : (
+        isEditMode ? "Save" : "Add"
+    )}
+</button>
                     </div>
                 </form>
             </div>

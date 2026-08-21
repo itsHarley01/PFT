@@ -11,6 +11,7 @@ type DateDetailsModalProps = {
     balance: number | undefined;
     transactions: Transaction[];
     onClose: () => void;
+    onTransactionChanged: () => void;
 };
 
 function DateDetailsModal({
@@ -18,6 +19,7 @@ function DateDetailsModal({
     balance,
     transactions,
     onClose,
+    onTransactionChanged,
 }: DateDetailsModalProps) {
     const [showAddTransaction, setShowAddTransaction] = useState(false);
     const [transactionToDelete, setTransactionToDelete] =
@@ -53,6 +55,7 @@ function DateDetailsModal({
         try {
             await deleteTransaction(transactionToDelete);
 
+            onTransactionChanged();
             setTransactionToDelete(null);
             onClose();
         } catch (error) {
@@ -232,6 +235,7 @@ function DateDetailsModal({
         onClose={() =>
             setShowAddTransaction(false)
         }
+        onTransactionChanged={onTransactionChanged}
     />
 )}
 
@@ -243,6 +247,7 @@ function DateDetailsModal({
         onClose={() =>
             setTransactionToEdit(null)
         }
+        onTransactionChanged={onTransactionChanged}
     />
 )}
 

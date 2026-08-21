@@ -14,6 +14,7 @@ import {
 function FinanceCalendar() {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [currentMonth, setCurrentMonth] = useState("");
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const [transactions, setTransactions] = useState<
         Record<string, Transaction>
@@ -132,7 +133,7 @@ function FinanceCalendar() {
         };
 
         fetchMonthData();
-    }, [currentMonth]);
+    }, [currentMonth, refreshKey]);
 
     return (
         <>
@@ -232,6 +233,9 @@ dayCellContent={(info) => {
             : []
     }
     onClose={handleCloseModal}
+    onTransactionChanged={() => {
+        setRefreshKey((prev) => prev + 1);
+    }}
 />
         </>
     );

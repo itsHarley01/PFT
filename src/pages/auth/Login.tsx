@@ -6,20 +6,30 @@ function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (isLoading) {
+            return;
+        }
+
         setError("");
+        setIsLoading(true);
 
         try {
             await loginByUsername(username, password);
 
             navigate("/dashboard");
-            
         } catch (error) {
-            setError("Login failed. Check your username and password.");
+            setError(
+                "Login failed. Check your username and password."
+            );
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -41,7 +51,6 @@ function Login() {
                     className="space-y-5"
                     onSubmit={handleLogin}
                 >
-
                     <div>
                         <label className="mb-2 block text-sm font-medium">
                             Username
@@ -51,8 +60,11 @@ function Login() {
                             type="text"
                             placeholder="Enter your username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                            onChange={(e) =>
+                                setUsername(e.target.value)
+                            }
+                            disabled={isLoading}
+                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100"
                         />
                     </div>
 
@@ -65,8 +77,11 @@ function Login() {
                             type="password"
                             placeholder="••••••••"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                            onChange={(e) =>
+                                setPassword(e.target.value)
+                            }
+                            disabled={isLoading}
+                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100"
                         />
                     </div>
 
@@ -87,11 +102,18 @@ function Login() {
 
                     <button
                         type="submit"
-                        className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
+                        disabled={isLoading}
+                        className="flex w-full items-center justify-center rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        Login
+                        {isLoading ? (
+                            <>
+                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                Logging in...
+                            </>
+                        ) : (
+                            "Login"
+                        )}
                     </button>
-
                 </form>
 
                 <div className="mt-6 text-center text-sm">
